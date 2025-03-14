@@ -1,11 +1,15 @@
-# On Call Access Checker
+# On-Call Access Checker
 
 An example of a full-stack application that helps Software Engineers quickly verify their security access and tool profile status. The system checks for VPN access, production group membership, and configuration tool access.
 
-<img width="563" alt="Screenshot 2025-03-13 at 9 27 20 PM" src="https://github.com/user-attachments/assets/9a9a59d6-2ec6-4dc4-bb85-021390c08673" />
-<img width="702" alt="Screenshot 2025-03-13 at 9 27 37 PM" src="https://github.com/user-attachments/assets/e89c44fe-af62-4850-a8a2-8d26bc4cdd77" />
-<img width="662" alt="Screenshot 2025-03-13 at 11 03 37 PM" src="https://github.com/user-attachments/assets/edfba29d-60b6-4bd9-9b8f-ab4d3fdb750c" />
+## Login Screen
+![On-Call Access Checker - Login Screen](https://github.com/user-attachments/assets/9a9a59d6-2ec6-4dc4-bb85-021390c08673)
 
+## User Access Status Overview
+![On-Call Access Checker - User Access Status Overview](https://github.com/user-attachments/assets/e89c44fe-af62-4850-a8a2-8d26bc4cdd77)
+
+## API Documentation (OpenAPI)
+![On-Call Access Checker - API Documentation (OpenAPI)](https://github.com/user-attachments/assets/edfba29d-60b6-4bd9-9b8f-ab4d3fdb750c)
 
 ## Tech Stack
 
