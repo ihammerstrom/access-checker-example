@@ -98,7 +98,7 @@ The frontend will be available at `http://localhost:5173`
 The system comes with two pre-configured test users:
 
 - `Alice Mc'Prod`: Has full access (VPN, production, config tool). Currently using "prod" profile.
-- `Bob Mc'NoProd`: Has limited access (VPN and config tool only). Curreently using "dev" Profile.
+- `Bob Mc'NoProd`: Has limited access (VPN and config tool only). Currently using "dev" Profile.
 
 ## Development
 
