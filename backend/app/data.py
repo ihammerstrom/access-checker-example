@@ -35,7 +35,7 @@ USERS = {
     }
 }
 
-def get_user_data(username: str, environment: str = "production"):
+def get_user_data(username: str, environment: str):
     """Simulate fetching user data from Okta and AWS Identity Center."""
     user = USERS.get(username)
     if not user:

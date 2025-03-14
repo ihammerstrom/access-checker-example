@@ -2,13 +2,38 @@
 
 A full-stack application that helps Software Engineers verify their security access and tool profile status. The system checks for VPN access, production group membership, and configuration tool access, while also verifying the correct tool profile for accessing resources.
 
+## Tech Stack
+
+### Backend
+- FastAPI (Python web framework)
+- Python 3.8+
+- Uvicorn (ASGI server)
+
+### Frontend
+- TypeScript
+- React
+- Vite (Build tool)
+
 ## Features
 
-- User authentication via username
+- User authentication via selecting username 😬
 - Real-time access status verification
-- Production access time-bound validation (12-hour window)
-- Tool profile verification
-- Modern, responsive UI with clear status indicators
+- One-click production access refresh
+- Automatic profile switching recommendations
+
+## Project Structure
+
+```
+.
+├── backend/
+│   ├── app/           # Backend application code
+│   └── requirements.txt
+├── frontend/
+│   ├── src/           # Frontend source code
+│   ├── public/        # Static assets
+│   └── package.json
+└── env/               # Python virtual environment
+```
 
 ## Prerequisites
 
@@ -18,13 +43,9 @@ A full-stack application that helps Software Engineers verify their security acc
 
 ## Setup
 
-1. Clone the repository and navigate to the project directory:
 
-```bash
-cd security-access-verification
-```
 
-2. Set up the backend:
+1. Set up the backend:
 
 ```bash
 # Create and activate virtual environment
@@ -33,10 +54,10 @@ source env/bin/activate  # On Windows: .\env\Scripts\activate
 
 # Install backend dependencies
 cd backend
-pip install fastapi uvicorn python-jose[cryptography] python-multipart pydantic
+pip install -r requirements.txt
 ```
 
-3. Set up the frontend:
+2. Set up the frontend:
 
 ```bash
 # Install frontend dependencies
@@ -55,6 +76,7 @@ uvicorn app.main:app --reload
 ```
 
 The backend API will be available at `http://localhost:8000`
+API documentation is available at `http://localhost:8000/docs`
 
 2. Start the frontend development server:
 
@@ -77,11 +99,25 @@ The frontend will be available at `http://localhost:5173`
 
 The system comes with two pre-configured test users:
 
-- `alice`: Has full access (VPN, production, config tool)
-- `bob`: Has limited access (VPN and config tool only)
+- `Alice Mc'Prod`: Has full access (VPN, production, config tool)
+- `Bob Mc'NoProd`: Has limited access (VPN and config tool only)
 
 ## Development
 
 - Backend code is in the `backend/app` directory
 - Frontend code is in the `frontend/src` directory
-- Mock data and access rules are defined in `backend/app/data.py` 
+- Mock data and access rules are defined in `backend/app/data.py`
+- API endpoints are defined in `backend/app/main.py`
+- Frontend components are in `frontend/src/components`
+- Frontend routing is handled in `frontend/src/App.tsx`
+
+## Contributing
+
+1. Create a new branch for your feature
+2. Make your changes
+3. Run tests (if applicable)
+4. Submit a pull request
+
+## License
+
+This project is proprietary and confidential. 

@@ -35,7 +35,7 @@ async def get_access_status(username: str, environment: str) -> AccessStatus:
         raise HTTPException(status_code=404, detail="User not found")
         
     user_data = get_user_data(username, environment)
-    user_groups = set(user_data.get("groups", []))
+    user_groups = set(user_data.get("groups"))
     
     # Check each access independently
     vpn_access = "vpn-users" in user_groups

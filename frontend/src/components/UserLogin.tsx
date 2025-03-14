@@ -56,7 +56,7 @@ const UserLogin = ({ onLogin }: UserLoginProps) => {
         <FormControl isRequired isInvalid={!!error}>
           <FormLabel>Select User</FormLabel>
           <Text fontSize="sm" color="gray.500" mb={2}>
-            Note: This is for demo purposes only. In production, we would use SSO authentication with proper auth tokens instead of manual user selection.
+            Note: This is for demo purposes only. In production, we would use SSO etc authentication with proper auth tokens instead of passing the user's name to identify the user.
           </Text>
           <Select
             placeholder="Choose a user"
