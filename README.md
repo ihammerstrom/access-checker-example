@@ -111,13 +111,3 @@ The system comes with two pre-configured test users:
 - Frontend components are in `frontend/src/components`
 - Frontend routing is handled in `frontend/src/App.tsx`
 
-## Contributing
-
-1. Create a new branch for your feature
-2. Make your changes
-3. Run tests (if applicable)
-4. Submit a pull request
-
-## License
-
-This project is proprietary and confidential. 
