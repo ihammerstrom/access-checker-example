@@ -9,6 +9,9 @@ An example of a full-stack application that helps Software Engineers quickly ver
 ![On-Call Access Checker - User Access Status Overview](https://github.com/user-attachments/assets/e89c44fe-af62-4850-a8a2-8d26bc4cdd77)
 
 ## API Documentation (OpenAPI)
+🚨🚨🚨 Note: The API accepts usernames instead of auth tokens to identify the user. This is for simple demo purposes only.
+
+
 ![On-Call Access Checker - API Documentation (OpenAPI)](https://github.com/user-attachments/assets/edfba29d-60b6-4bd9-9b8f-ab4d3fdb750c)
 
 ## Tech Stack
