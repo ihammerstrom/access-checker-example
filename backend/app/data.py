@@ -1,36 +1,47 @@
 from datetime import datetime, timedelta
+from .config import (
+    GROUP_VPN_USERS,
+    GROUP_DEV_ACCESS,
+    GROUP_PROD_ACCESS,
+    GROUP_CONFIG_TOOL,
+    ENV_PRODUCTION,
+    ENV_DEVELOPMENT,
+    PROFILE_PROD,
+    PROFILE_DEV,
+    PRODUCTION_ACCESS_DURATION
+)
 
 # Simulated Okta user database with group memberships
 USERS = {
     "Alice Mc'Prod": {
         "okta_groups": {
-            "development": [
-                "vpn-users",  # Okta VPN access group
-                "dev-access",  # Okta development environment access group
-                "config-tool-users"  # Okta config tool access group
+            ENV_DEVELOPMENT: [
+                GROUP_VPN_USERS,  # Okta VPN access group
+                GROUP_DEV_ACCESS,  # Okta development environment access group
+                GROUP_CONFIG_TOOL  # Okta config tool access group
             ],
-            "production": [
-                "vpn-users",
-                "prod-access",  # Okta production environment access group
-                "config-tool-users"
+            ENV_PRODUCTION: [
+                GROUP_VPN_USERS,
+                GROUP_PROD_ACCESS,  # Okta production environment access group
+                GROUP_CONFIG_TOOL
             ]
         },
-        "aws_profile": "prod",  # Current AWS Identity Center profile
+        "aws_profile": PROFILE_PROD,  # Current AWS Identity Center profile
         "production_access_expiry": None
     },
     "Bob Mc'NoProd": {
         "okta_groups": {
-            "development": [
-                "vpn-users",
-                "dev-access",
-                "config-tool-users"
+            ENV_DEVELOPMENT: [
+                GROUP_VPN_USERS,
+                GROUP_DEV_ACCESS,
+                GROUP_CONFIG_TOOL
             ],
-            "production": [
-                "vpn-users",
-                "config-tool-users"
+            ENV_PRODUCTION: [
+                GROUP_VPN_USERS,
+                GROUP_CONFIG_TOOL
             ]        
         },
-        "aws_profile": "dev",  # Current AWS Identity Center profile
+        "aws_profile": PROFILE_DEV,  # Current AWS Identity Center profile
         "production_access_expiry": None
     }
 }
@@ -57,9 +68,9 @@ def update_production_access(username):
     """Grant new AWS SSO session for 12 hours."""
     if username in USERS:
         # Only update if user has prod-access group
-        user_data = get_user_data(username, "production")
-        if "prod-access" in user_data.get("groups", []):
-            USERS[username]["production_access_expiry"] = datetime.now() + timedelta(hours=12)
+        user_data = get_user_data(username, ENV_PRODUCTION)
+        if GROUP_PROD_ACCESS in user_data.get("groups", []):
+            USERS[username]["production_access_expiry"] = datetime.now() + timedelta(hours=PRODUCTION_ACCESS_DURATION)
             return True
     return False
 

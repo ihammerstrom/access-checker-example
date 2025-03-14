@@ -10,6 +10,7 @@ import {
   Text,
 } from '@chakra-ui/react'
 import axios from 'axios'
+import { API_BASE_URL } from '../config'
 
 interface UserLoginProps {
   onLogin: (username: string) => void
@@ -24,7 +25,7 @@ const UserLogin = ({ onLogin }: UserLoginProps) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/users')
+        const response = await axios.get(`${API_BASE_URL}/users`)
         setUsers(response.data)
       } catch (err) {
         setError('Failed to load users. Please try again.')
@@ -40,7 +41,7 @@ const UserLogin = ({ onLogin }: UserLoginProps) => {
       setError('')
       try {
         // Try to fetch the user's access status to validate the username
-        await axios.get(`http://localhost:8000/access-status/${username}?environment=production`)
+        await axios.get(`${API_BASE_URL}/access-status/${username}?environment=production`)
         onLogin(username)
       } catch (err) {
         setError('Failed to load user data. Please try again.')

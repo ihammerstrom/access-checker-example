@@ -3,6 +3,8 @@ import { ChakraProvider, Box, Container, Heading, Text, HStack, Avatar, Flex, Se
 import { theme } from '@chakra-ui/react'
 import { AccessChecker, UserLogin } from './components'
 import axios from 'axios'
+import { API_BASE_URL } from './config'
+import { handleApiError } from './utils/errorHandling'
 
 function App() {
   const [username, setUsername] = useState<string>('')
@@ -13,16 +15,10 @@ function App() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/users')
+        const response = await axios.get(`${API_BASE_URL}/users`)
         setUsers(response.data)
       } catch (err) {
-        toast({
-          title: 'Error',
-          description: 'Failed to load users',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        })
+        handleApiError(err, toast)
       }
     }
     fetchUsers()
@@ -33,7 +29,7 @@ function App() {
     
     setIsLoading(true)
     try {
-      await axios.get(`http://localhost:8000/access-status/${newUsername}?environment=production`)
+      await axios.get(`${API_BASE_URL}/access-status/${newUsername}?environment=production`)
       setUsername(newUsername)
       toast({
         title: 'Success',
@@ -43,13 +39,7 @@ function App() {
         isClosable: true,
       })
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to load user data',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      })
+      handleApiError(err, toast)
     } finally {
       setIsLoading(false)
     }
