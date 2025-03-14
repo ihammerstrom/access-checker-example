@@ -1,6 +1,6 @@
 # Security Access Verification System
 
-A full-stack application that helps Software Engineers verify their security access and tool profile status. The system checks for VPN access, production group membership, and configuration tool access, while also verifying the correct tool profile for accessing resources.
+An example of a full-stack application that helps Software Engineers verify their security access and tool profile status. The system checks for VPN access, production group membership, and configuration tool access, while also verifying the correct tool profile for accessing resources.
 
 ## Tech Stack
 
@@ -16,24 +16,10 @@ A full-stack application that helps Software Engineers verify their security acc
 
 ## Features
 
-- User authentication via selecting username 😬
 - Real-time access status verification
 - One-click production access refresh
 - Automatic profile switching recommendations
 
-## Project Structure
-
-```
-.
-├── backend/
-│   ├── app/           # Backend application code
-│   └── requirements.txt
-├── frontend/
-│   ├── src/           # Frontend source code
-│   ├── public/        # Static assets
-│   └── package.json
-└── env/               # Python virtual environment
-```
 
 ## Prerequisites
 
