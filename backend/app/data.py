@@ -1,81 +1,74 @@
 from datetime import datetime, timedelta
 
-# Simulated user database with environment-specific access
+# Simulated Okta user database with group memberships
 USERS = {
-    "alice": {
-        "groups": {
-            "development": ["vpn_users", "config_tool_users"],
-            "production": ["vpn_users", "prod_access", "config_tool_users"]
+    "Alice Mc'Prod": {
+        "okta_groups": {
+            "development": [
+                "vpn-users",  # Okta VPN access group
+                "dev-access",  # Okta development environment access group
+                "config-tool-users"  # Okta config tool access group
+            ],
+            "production": [
+                "vpn-users",
+                "prod-access",  # Okta production environment access group
+                "config-tool-users"
+            ]
         },
-        "access_profiles": ["prod_profile", "dev_profile"],
+        "aws_profile": "prod",  # Current AWS Identity Center profile
         "production_access_expiry": None
     },
-    "bob": {
-        "groups": {
-            "development": ["vpn_users", "config_tool_users"],
-            "production": ["vpn_users", "config_tool_users"]  # No prod_access in production
+    "Bob Mc'NoProd": {
+        "okta_groups": {
+            "development": [
+                "vpn-users",
+                "dev-access",
+                "config-tool-users"
+            ],
+            "production": [
+                "vpn-users",
+                "config-tool-users"
+            ]        
         },
-        "access_profiles": ["dev_profile"],
+        "aws_profile": "dev",  # Current AWS Identity Center profile
         "production_access_expiry": None
-    }
-}
-
-# Access requirements per environment
-REQUIRED_GROUPS = {
-    "development": {
-        "vpn": ["vpn_users"],
-        "production": [],  # No production access needed in dev
-        "config_tool": ["config_tool_users"]
-    },
-    "production": {
-        "vpn": ["vpn_users"],
-        "production": ["prod_access"],
-        "config_tool": ["config_tool_users"]
-    }
-}
-
-# Profile configurations
-PROFILES = {
-    "dev": {
-        "name": "dev_profile",
-        "is_production": False
-    },
-    "prod": {
-        "name": "prod_profile",
-        "is_production": True
     }
 }
 
 def get_user_data(username: str, environment: str = "production"):
-    """Simulate fetching user data from a database."""
-    user = USERS.get(username, {
-        "groups": {
-            "development": [],
-            "production": []
-        },
-        "access_profiles": [],
-        "production_access_expiry": None
-    })
+    """Simulate fetching user data from Okta and AWS Identity Center."""
+    user = USERS.get(username)
+    if not user:
+        raise ValueError(f"User {username} not found")
     
-    # Return environment-specific groups
+    current_profile = user["aws_profile"]
+    profile_status = "correct" if current_profile == environment else "incorrect"
+    profile_status_message = f"You are currently in the {profile_status} profile ({current_profile}) for {environment} environment"
+    
+    # Return the groups for the specific environment and other user data
     return {
-        "groups": user["groups"].get(environment, []),
-        "access_profiles": user["access_profiles"],
-        "production_access_expiry": user["production_access_expiry"]
+        "groups": user["okta_groups"][environment],  # Get groups for the specific environment
+        "current_profile": current_profile,
+        "production_access_expiry": user["production_access_expiry"],
+        "profile_status_message": profile_status_message
     }
 
-def update_production_access(username: str):
-    """Grant production access for 12 hours."""
+def update_production_access(username):
+    """Grant new AWS SSO session for 12 hours."""
     if username in USERS:
-        USERS[username]["production_access_expiry"] = datetime.now() + timedelta(hours=12)
-        return True
+        # Only update if user has prod-access group
+        user_data = get_user_data(username, "production")
+        if "prod-access" in user_data.get("groups", []):
+            USERS[username]["production_access_expiry"] = datetime.now() + timedelta(hours=12)
+            return True
     return False
 
-def check_production_access_valid(username: str) -> bool:
-    """Check if production access is still valid."""
+def check_production_access_valid(username):
+    """Check if AWS SSO session is still valid."""
     user = USERS.get(username)
     if not user:
         return False
+
     expiry = user.get("production_access_expiry")
     if not expiry:
         return False

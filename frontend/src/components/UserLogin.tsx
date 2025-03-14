@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Box,
   Button,
   FormControl,
   FormLabel,
-  Input,
+  Select,
   VStack,
   FormErrorMessage,
+  Text,
 } from '@chakra-ui/react'
 import axios from 'axios'
 
@@ -16,20 +17,33 @@ interface UserLoginProps {
 
 const UserLogin = ({ onLogin }: UserLoginProps) => {
   const [username, setUsername] = useState('')
+  const [users, setUsers] = useState<string[]>([])
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/users')
+        setUsers(response.data)
+      } catch (err) {
+        setError('Failed to load users. Please try again.')
+      }
+    }
+    fetchUsers()
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (username.trim()) {
+    if (username) {
       setIsLoading(true)
       setError('')
       try {
         // Try to fetch the user's access status to validate the username
-        await axios.get(`http://localhost:8000/access-status/${username.trim()}`)
-        onLogin(username.trim())
+        await axios.get(`http://localhost:8000/access-status/${username}?environment=production`)
+        onLogin(username)
       } catch (err) {
-        setError('Username not found. Please check and try again.')
+        setError('Failed to load user data. Please try again.')
       } finally {
         setIsLoading(false)
       }
@@ -40,23 +54,31 @@ const UserLogin = ({ onLogin }: UserLoginProps) => {
     <Box as="form" onSubmit={handleSubmit}>
       <VStack spacing={4}>
         <FormControl isRequired isInvalid={!!error}>
-          <FormLabel>Username</FormLabel>
-          <Input
-            type="text"
+          <FormLabel>Select User</FormLabel>
+          <Text fontSize="sm" color="gray.500" mb={2}>
+            Note: This is for demo purposes only. In production, we would use SSO authentication with proper auth tokens instead of manual user selection.
+          </Text>
+          <Select
+            placeholder="Choose a user"
             value={username}
             onChange={(e) => {
               setUsername(e.target.value)
               setError('')
             }}
-            placeholder="Enter your username"
-          />
+          >
+            {users.map((user) => (
+              <option key={user} value={user}>
+                {user}
+              </option>
+            ))}
+          </Select>
           <FormErrorMessage>{error}</FormErrorMessage>
         </FormControl>
-        <Button 
-          type="submit" 
-          colorScheme="blue" 
+        <Button
+          type="submit"
+          colorScheme="blue"
+          width="full"
           isLoading={isLoading}
-          disabled={!username.trim()}
         >
           Continue
         </Button>

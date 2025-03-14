@@ -9,6 +9,9 @@ import {
   Select,
   HStack,
   Circle,
+  Link,
+  Button,
+  useToast,
 } from '@chakra-ui/react'
 import axios from 'axios'
 
@@ -20,9 +23,9 @@ interface AccessStatus {
 }
 
 interface ProfileStatus {
-  current_profile: string
-  is_production: boolean
   needs_switch: boolean
+  profile_status_message: string
+  current_profile: string
 }
 
 interface AccessCheckerProps {
@@ -35,6 +38,8 @@ export const AccessChecker = ({ username }: AccessCheckerProps) => {
   const [profileStatus, setProfileStatus] = useState<ProfileStatus | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
+  const toast = useToast()
 
   const checkStatus = async () => {
     setLoading(true)
@@ -54,11 +59,34 @@ export const AccessChecker = ({ username }: AccessCheckerProps) => {
     }
   }
 
+  const handleRefreshAccess = async () => {
+    setRefreshing(true)
+    try {
+      await axios.post(`http://localhost:8000/refresh-production-access/${username}`)
+      toast({
+        title: 'Success',
+        description: 'Production access refreshed successfully',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
+      await checkStatus() // Refresh the status display
+    } catch (err: any) {
+      toast({
+        title: 'Error',
+        description: err.response?.data?.detail || 'Failed to refresh production access',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
   useEffect(() => {
     checkStatus()
   }, [environment])
-
-  const getStatusColor = (status: boolean) => status ? "green.500" : "red.500"
 
   if (loading) {
     return (
@@ -103,41 +131,55 @@ export const AccessChecker = ({ username }: AccessCheckerProps) => {
           <Text fontSize="xl" fontWeight="bold" mb={4}>
             Access Checklist
           </Text>
-          <VStack align="stretch" spacing={3}>
-            {accessStatus && (
-              <VStack spacing={4} align="stretch">
-                <HStack>
-                  <Circle size="16px" bg={getStatusColor(accessStatus.vpn_access || false)} />
-                  <Text>VPN Access</Text>
-                  {!accessStatus.vpn_access && (
-                    <Text as="i" color="gray.500">Please connect to the VPN</Text>
-                  )}
-                </HStack>
+          {accessStatus && (
+            <VStack spacing={4} align="stretch">
+              <HStack>
+                <Circle size="16px" bg={accessStatus.vpn_access ? "green.500" : "red.500"} />
+                <Text>VPN Access</Text>
+                {!accessStatus.vpn_access && (
+                  <Text as="i" color="gray.500">Please connect to the VPN</Text>
+                )}
+              </HStack>
 
-                <HStack alignItems="flex-start">
-                  <Circle size="16px" bg={getStatusColor(accessStatus.production_group_access || false)} mt={1} />
-                  <VStack align="flex-start" spacing={1}>
-                    <Text>Production Group Access</Text>
-                    {!accessStatus.production_group_access && (
+              <HStack alignItems="flex-start">
+                <Circle size="16px" bg={accessStatus.production_group_access ? "green.500" : "red.500"} mt={1} />
+                <VStack align="flex-start" spacing={1}>
+                  <Text>{environment === 'development' ? 'Development Group Access' : 'Production Group Access'}</Text>
+                  {!accessStatus.production_group_access && environment === 'production' && (
+                    <HStack spacing={2}>
                       <Text as="i" color="gray.500">
-                        {environment === 'production' 
-                          ? 'Request production group access from your manager'
-                          : 'Request development group access from your manager'}
+                        Request production group access:
                       </Text>
-                    )}
-                  </VStack>
-                </HStack>
-
-                <HStack>
-                  <Circle size="16px" bg={getStatusColor(accessStatus.config_tool_access || false)} />
-                  <Text>Config Tool Access</Text>
-                  {!accessStatus.config_tool_access && (
-                    <Text as="i" color="gray.500">Request config tool access from your manager</Text>
+                      {accessStatus.production_access_valid_until === null && (
+                        <Button
+                          size="sm"
+                          colorScheme="blue"
+                          onClick={handleRefreshAccess}
+                          isLoading={refreshing}
+                          width="210px"
+                        >
+                          Refresh Access
+                        </Button>
+                      )}
+                    </HStack>
                   )}
-                </HStack>
-              </VStack>
-            )}
-          </VStack>
+                </VStack>
+              </HStack>
+
+              <HStack>
+                <Circle size="16px" bg={accessStatus.config_tool_access ? "green.500" : "red.500"} />
+                <Text>Config Tool Access</Text>
+                {!accessStatus.config_tool_access && (
+                  <Text as="i" color="gray.500">
+                    Request config tool access from the{' '}
+                    <Link href="https://access.example.com" color="blue.500" isExternal>
+                      access managment tool
+                    </Link>
+                  </Text>
+                )}
+              </HStack>
+            </VStack>
+          )}
           {environment === 'production' && accessStatus?.production_access_valid_until && (
             <Text mt={4} fontStyle="italic" color="gray.500">
               Production access valid until: {new Date(accessStatus.production_access_valid_until).toLocaleString()}
@@ -149,10 +191,17 @@ export const AccessChecker = ({ username }: AccessCheckerProps) => {
           <Text fontSize="xl" fontWeight="bold" mb={4}>
             Tool Profile Checker
           </Text>
-          <Text fontStyle="italic" color="gray.500">
-            You are currently using the {profileStatus?.current_profile} profile. 
-            {profileStatus?.needs_switch && ' Once access is granted, please switch to prod (link).'}
-          </Text>
+          {profileStatus && (
+            <Text 
+              fontStyle="italic" 
+              color={(environment === "production" ? profileStatus.current_profile === "prod" : profileStatus.current_profile === "dev") 
+                ? "green.500" 
+                : "red.500"
+              }
+            >
+              {profileStatus.profile_status_message}
+            </Text>
+          )}
         </Box>
       </Box>
     </Box>
