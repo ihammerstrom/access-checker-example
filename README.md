@@ -4,6 +4,7 @@ An example of a full-stack application that helps Software Engineers quickly ver
 
 <img width="563" alt="Screenshot 2025-03-13 at 9 27 20 PM" src="https://github.com/user-attachments/assets/9a9a59d6-2ec6-4dc4-bb85-021390c08673" />
 <img width="702" alt="Screenshot 2025-03-13 at 9 27 37 PM" src="https://github.com/user-attachments/assets/e89c44fe-af62-4850-a8a2-8d26bc4cdd77" />
+<img width="839" alt="Screenshot 2025-03-13 at 10 59 58 PM" src="https://github.com/user-attachments/assets/b345aa1e-28d9-4b45-8403-a26694710d90" />
 
 
 ## Tech Stack
